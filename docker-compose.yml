@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: carbot_db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-carbot}
+      POSTGRES_USER: ${DB_USER:-carbot_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - carbot_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-carbot_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bot:
+    build: .
+    container_name: carbot_bot
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - DB_URL=postgresql://${DB_USER:-carbot_user}:${DB_PASSWORD}@db:5432/${DB_NAME:-carbot}
+      - AUTOTEKA_EMAIL=${AUTOTEKA_EMAIL}
+      - AUTOTEKA_PASSWORD=${AUTOTEKA_PASSWORD}
+      - YOOKASSA_SHOP_ID=${YOOKASSA_SHOP_ID}
+      - YOOKASSA_SECRET_KEY=${YOOKASSA_SECRET_KEY}
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - carbot_network
+
+networks:
+  carbot_network:
+
+volumes:
+  postgres_data:
