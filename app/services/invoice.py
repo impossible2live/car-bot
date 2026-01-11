@@ -12,7 +12,7 @@ class YookassaService:
 
     async def create_payment(self, amount: float, user_id: int, description: str = "Пополнение баланса"):
         try:
-            payment = Payment.create({
+            payment_data = {
                 "amount": {
                     "value": f"{amount:.2f}",
                     "currency": "RUB"
@@ -25,8 +25,28 @@ class YookassaService:
                 "description": f"{description} (ID: {user_id})",
                 "metadata": {
                     "user_id": str(user_id)
+                },
+                "receipt": {
+                    "customer": {
+                        "email": f"{user_id}@tg.ru"
+                    },
+                    "items": [
+                        {
+                            "description": description[:128],
+                            "quantity": "1.00",
+                            "amount": {
+                                "value": f"{amount:.2f}",
+                                "currency": "RUB"
+                            },
+                            "vat_code": 1,
+                            "payment_mode": "full_payment",
+                            "payment_subject": "service"
+                        }
+                    ]
                 }
-            }, self.idempotence_key)
+            }
+
+            payment = Payment.create(payment_data, self.idempotence_key)
 
             self.idempotence_key = str(uuid.uuid4())
 
