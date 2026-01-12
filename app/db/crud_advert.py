@@ -18,7 +18,7 @@ async def create_advert_from_state(user_id: int, data: Dict[str, Any]) -> Advert
     advert = await Advert.create(
         owner_id=user_id,
         name=data.get("name", ""),
-        year=data.get("year", 0),
+        year=data.get("year", 2015),
         mileage=int(data.get("mileage") or 0),
         condition=data.get("condition", ""),
         fuel_type=data.get("fuel_type", ""),
