@@ -539,7 +539,7 @@ async def process_change(callback: CallbackQuery, state: FSMContext):
 async def ad_publish(callback: CallbackQuery, state: FSMContext):
     from app.db.crud_user import is_user_shadow_banned
     if is_user_shadow_banned(callback.from_user.id):
-        await callback.edit_text(
+        await callback.message.edit_text(
             "✅ Объявление успешно опубликовано!"
         )
         return
@@ -552,7 +552,7 @@ async def ad_publish(callback: CallbackQuery, state: FSMContext):
     from app.db.crud_admin import get_settings
 
     if is_user_shadow_banned(callback.from_user.id):
-        await callback.edit_text(
+        await callback.message.edit_text(
             "✅ Объявление успешно опубликовано!"
         )
         return
