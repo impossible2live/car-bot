@@ -102,7 +102,7 @@ async def get_random_advert_with_filters(
         if 'year_from' in filters_copy and 'year_to' in filters_copy:
             filters = filters_copy
 
-    qs = Advert.filter(status="pending")
+    qs = Advert.filter(status="active")
 
     city = filters.get("city")
     if city:
